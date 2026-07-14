@@ -11,11 +11,19 @@ No backend required. Everything runs in the browser; history is stored locally.
 
 ---
 
-## Quick start
+## Live app
 
-1. Make sure `config.js` exists with your PSI API key (copy `config.example.js` →
-   `config.js` and paste the key, or just paste the key into the app UI).
-2. Serve the folder over HTTP (PSI + PDF need a real origin, not `file://`):
+**https://mikehholladay.github.io/wix-speed-diagnostic/**
+
+Open it, paste your PageSpeed Insights API key once (stored only in your browser —
+never uploaded or committed), and enter a website URL. Nothing to install.
+
+## Quick start (local)
+
+1. Copy `config.example.js` → `config.js` and paste your key (optional — you can also
+   just paste it into the app UI). `config.js` is gitignored.
+2. Serve the folder over HTTP (PSI + PDF need a real origin, not `file://`). On Windows
+   you can use the included `serve.ps1` (`powershell -File serve.ps1`), or:
 
    ```bash
    # any of these, from this folder:
@@ -62,7 +70,9 @@ effort chasing fixes you can't make.
 The PSI key is read-only and quota-limited, but it's still a credential. It lives in
 `config.js` (gitignored) or your browser's localStorage. **Restrict it** to the
 PageSpeed Insights API with an HTTP-referrer restriction, or rotate it, in Google
-Cloud Console.
+Cloud Console. If you add a referrer restriction, allow both
+`https://mikehholladay.github.io/*` (the hosted app) and `http://localhost:*` (local
+testing) or the API calls will be rejected with a 403.
 
 ## Files
 
