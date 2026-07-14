@@ -664,8 +664,25 @@
     $("runForm").addEventListener("submit", (e) => { e.preventDefault(); runDiagnostic($("urlInput").value); });
     $("rerunBtn").addEventListener("click", () => { if (STATE.url) { toast("Re-running to measure your changes…"); runDiagnostic(STATE.url); } else toast("Run a scan first."); });
     $("pdfBtn").addEventListener("click", downloadPDF);
-    $("emailBtn").addEventListener("click", () => { window.location.href = `mailto:?subject=${encodeURIComponent("Site speed report — " + STATE.url)}&body=${encodeURIComponent(summaryText())}`; });
-    $("copyBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(summaryText()); toast("Summary copied to clipboard."); } catch { toast("Couldn't copy — browser blocked clipboard access."); } });
+
+    // Email-ready summary: show it in the browser, selectable + copyable (no mail client needed)
+    const closeSummary = () => { $("summaryModal").hidden = true; };
+    const openSummary = () => {
+      const ta = $("summaryTextarea"); ta.value = summaryText();
+      $("summaryModal").hidden = false; ta.focus(); ta.setSelectionRange(0, ta.value.length);
+    };
+    async function copyText(text) {
+      try { await navigator.clipboard.writeText(text); return true; }
+      catch {
+        const ta = $("summaryTextarea"); ta.focus(); ta.select();
+        try { return document.execCommand("copy"); } catch { return false; }
+      }
+    }
+    $("emailBtn").addEventListener("click", openSummary);
+    $("summaryCopy").addEventListener("click", async () => toast(await copyText($("summaryTextarea").value) ? "Copied — paste it into your email." : "Press Ctrl+C to copy the selected text."));
+    $("copyBtn").addEventListener("click", async () => { if (await copyText(summaryText())) toast("Summary copied to clipboard."); else { openSummary(); toast("Here's your summary — select it and press Ctrl+C."); } });
+    document.querySelectorAll("#summaryModal [data-close]").forEach((el) => el.addEventListener("click", closeSummary));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSummary(); });
     $("clearHistory").addEventListener("click", () => {
       if (!STATE.urlKey || !confirm("Clear saved scan history and checked-off actions for " + STATE.url + "?")) return;
       const h = store.get(LS.hist, {}); delete h[STATE.urlKey]; store.set(LS.hist, h);

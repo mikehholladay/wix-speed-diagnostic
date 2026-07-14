@@ -217,6 +217,19 @@ table.hist td.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 .empty { color: var(--muted-2); font-size: 13px; padding: 8px 0; }
 
+/* Email-ready summary modal */
+.modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(4, 7, 18, 0.72); }
+.modal-card { position: relative; width: min(680px, 94vw); max-height: 88vh; overflow: auto; padding: 22px;
+  background: linear-gradient(180deg, var(--card), var(--card-2)); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.modal-head h2 { margin: 0; }
+.summary-text { width: 100%; min-height: 320px; margin-top: 10px; resize: vertical; padding: 14px;
+  font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--text);
+  background: #0a0f22; border: 1px solid var(--line); border-radius: 10px; white-space: pre; }
+.summary-text:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.22); }
+.modal-actions { display: flex; gap: 10px; margin-top: 14px; }
+
 @media (max-width: 760px) {
   .score-grid, .two-col { grid-template-columns: 1fr; }
   .action { grid-template-columns: auto 1fr; }

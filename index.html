@@ -136,6 +136,23 @@
     </footer>
   </div>
 
+  <!-- Email-ready summary modal (in-browser, copy/paste) -->
+  <div id="summaryModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Email-ready summary">
+      <div class="modal-head">
+        <h2>Email-ready summary</h2>
+        <button class="btn btn-ghost small" type="button" data-close>✕ Close</button>
+      </div>
+      <p class="muted small">Select all and copy (or use the button), then paste into your email.</p>
+      <textarea id="summaryTextarea" class="summary-text" readonly spellcheck="false"></textarea>
+      <div class="modal-actions">
+        <button id="summaryCopy" class="btn btn-primary" type="button">📋 Copy to clipboard</button>
+        <button class="btn btn-ghost" type="button" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="toast" hidden></div>
 
