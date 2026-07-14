@@ -18,6 +18,8 @@
 }
 
 * { box-sizing: border-box; }
+/* Ensure the hidden attribute always wins over display-setting classes (e.g. .loading) */
+[hidden] { display: none !important; }
 
 body {
   margin: 0;

@@ -1,6 +1,9 @@
 # Local API key — never commit this
 config.js
 
+# Local dev server (Windows) — not part of the hosted app
+serve.ps1
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
