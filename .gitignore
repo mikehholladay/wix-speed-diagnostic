@@ -1,0 +1,8 @@
+# Local API key — never commit this
+config.js
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+node_modules/

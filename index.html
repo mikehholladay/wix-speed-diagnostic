@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wix Speed Self-Diagnostic</title>
+  <meta name="description" content="Measure your site's real performance and get a prioritized, Wix-aware action plan with a re-run-to-measure feedback loop." />
+  <link rel="preconnect" href="https://www.googleapis.com" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark">⚡</span>
+        <div>
+          <h1>Wix Speed Self-Diagnostic</h1>
+          <p class="tagline">Measure it. See exactly what's slow. Fix it. Prove the gain.</p>
+        </div>
+      </div>
+      <button id="keyBtn" class="btn btn-ghost" type="button" title="Set your PageSpeed API key">🔑 API key</button>
+    </header>
+
+    <!-- API key panel -->
+    <section id="keyPanel" class="card key-panel" hidden>
+      <h2>Google PageSpeed Insights API key</h2>
+      <p class="muted">
+        Get a free key at
+        <a href="https://developers.google.com/speed/docs/insights/v5/get-started" target="_blank" rel="noopener">Google's Get Started page</a>.
+        It's stored only in this browser (localStorage) — never uploaded. For a public/hosted copy of this app,
+        restrict the key to the <em>PageSpeed Insights API</em> with an HTTP-referrer restriction.
+      </p>
+      <div class="key-row">
+        <input id="keyInput" class="input" type="password" placeholder="AIzaSy…" autocomplete="off" spellcheck="false" />
+        <button id="keySave" class="btn btn-primary" type="button">Save</button>
+        <button id="keyClear" class="btn btn-ghost" type="button">Clear</button>
+      </div>
+      <p id="keyStatus" class="key-status"></p>
+    </section>
+
+    <!-- Run form -->
+    <section class="card run-card">
+      <form id="runForm" class="run-form">
+        <label class="field">
+          <span class="field-label">Your website URL</span>
+          <input id="urlInput" class="input input-lg" type="url" inputmode="url" placeholder="https://your-site.com" required />
+        </label>
+        <button id="runBtn" class="btn btn-primary btn-lg" type="submit">Run diagnostic</button>
+      </form>
+      <p class="run-hint muted">
+        Runs a real <strong>mobile</strong> &amp; <strong>desktop</strong> test via Google PageSpeed Insights. Takes ~15–40s.
+      </p>
+      <div id="runError" class="alert alert-error" hidden></div>
+    </section>
+
+    <!-- Loading -->
+    <section id="loading" class="card loading" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <div>
+        <p id="loadingMsg" class="loading-msg">Contacting Google PageSpeed Insights…</p>
+        <p class="muted small">Mobile is a deliberately harsh throttled test — low mobile numbers are normal, even for good sites.</p>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <main id="results" hidden>
+      <!-- Score summary -->
+      <section class="score-grid">
+        <div class="card score-card" id="scoreMobile"></div>
+        <div class="card score-card" id="scoreDesktop"></div>
+      </section>
+
+      <!-- Core Web Vitals -->
+      <section class="card">
+        <div class="section-head">
+          <h2>Core Web Vitals</h2>
+          <span id="cwvSource" class="pill"></span>
+        </div>
+        <p class="muted small" id="cwvNote"></p>
+        <div id="cwvGrid" class="cwv-grid"></div>
+      </section>
+
+      <!-- Prioritized actions -->
+      <section class="card">
+        <div class="section-head">
+          <h2>Your prioritized action plan</h2>
+          <div class="filters" id="actionFilters"></div>
+        </div>
+        <p class="muted small">
+          Sorted by estimated impact. <strong>Point estimates are approximations</strong> from each audit's reported
+          savings and the score weights — the real number is whatever the <em>Re-run</em> shows after you make the change.
+          Check items off as you do them, then re-run.
+        </p>
+        <ul id="actionList" class="action-list"></ul>
+      </section>
+
+      <!-- Cost breakdown: apps & images -->
+      <section class="two-col">
+        <div class="card">
+          <h2>What each app / third-party script costs you</h2>
+          <p class="muted small">Main-thread blocking time and download size, per provider. This is your "which app is slowing me down" view.</p>
+          <div id="thirdPartyBox"></div>
+        </div>
+        <div class="card">
+          <h2>Your heaviest images</h2>
+          <p class="muted small">Largest potential savings first. On Wix, fix these by uploading right-sized images (don't upload camera originals).</p>
+          <div id="imagesBox"></div>
+        </div>
+      </section>
+
+      <!-- Progress over time -->
+      <section class="card">
+        <div class="section-head">
+          <h2>Your progress</h2>
+          <button id="clearHistory" class="btn btn-ghost small" type="button">Clear history</button>
+        </div>
+        <div id="chartBox" class="chart-box"></div>
+        <div id="historyTable"></div>
+      </section>
+
+      <!-- Actions bar -->
+      <section class="actionbar">
+        <button id="rerunBtn" class="btn btn-primary" type="button">🔁 Re-run &amp; measure improvement</button>
+        <button id="pdfBtn" class="btn btn-secondary" type="button">📄 Download PDF report</button>
+        <button id="emailBtn" class="btn btn-secondary" type="button">✉️ Email-ready summary</button>
+        <button id="copyBtn" class="btn btn-ghost" type="button">📋 Copy summary</button>
+      </section>
+    </main>
+
+    <footer class="site-footer muted small">
+      <p>
+        Data from Google PageSpeed Insights / Lighthouse &amp; the Chrome UX Report. Runs entirely in your browser;
+        history is stored locally. Point-impact figures are estimates for prioritization.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- Libraries (pinned). jsPDF must load before the autotable plugin. -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@5.0.8/dist/jspdf.plugin.autotable.min.js"></script>
+  <!-- Optional local key file (present only for local dev; gitignored, so absent on hosted copies). -->
+  <script src="config.js" onerror="void 0"></script>
+  <!-- App -->
+  <script src="app.js"></script>
+</body>
+</html>
